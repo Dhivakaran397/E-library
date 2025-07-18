@@ -1,0 +1,9 @@
+{
+  "name": "The Time Machine",
+  "author": "H.G. Wells",
+  "description": "A science fiction novel about time travel.",
+  "price": "₹299",
+  "category": "Science",
+  "rating": 4.3,
+  "image": "https://example.com/time-machine.jpg"
+}

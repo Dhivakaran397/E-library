@@ -1,0 +1,882 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookVibe - Digital Library System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .cart-slide {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .cart-slide.open {
+            transform: translateX(0);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold gradient-bg bg-clip-text text-transparent">
+                        📚 BookVibe
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors">Home</a>
+                    <a href="#books" class="text-gray-700 hover:text-purple-600 transition-colors">Books</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors">About</a>
+                    <a href="#contact" onclick="scrollToContact()" class="text-gray-700 hover:text-purple-600 transition-colors">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-700 hover:text-purple-600 transition-colors">
+                        🔍
+                    </button>
+                    <button onclick="toggleFavorites()" class="relative text-gray-700 hover:text-purple-600 transition-colors">
+                        ❤️
+                        <span id="favorites-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button onclick="toggleCart()" class="relative text-gray-700 hover:text-purple-600 transition-colors">
+                        📖
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center fade-in">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    Digital Library
+                    <span class="block text-yellow-300">Made Simple</span>
+                </h1>
+                <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+                    Discover thousands of books with our modern digital library system. Your reading journey starts here.
+                </p>
+                <button onclick="scrollToProducts()" class="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors pulse-animation">
+                    Browse Books 📚
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Browse by Genre</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div onclick="filterByCategory('fiction')" class="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all cursor-pointer">
+                    <div class="text-6xl mb-4">📖</div>
+                    <h3 class="text-xl font-semibold mb-2">Fiction</h3>
+                    <p class="text-gray-600">Novels and short stories</p>
+                </div>
+                <div onclick="filterByCategory('science')" class="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-all cursor-pointer">
+                    <div class="text-6xl mb-4">🔬</div>
+                    <h3 class="text-xl font-semibold mb-2">Science</h3>
+                    <p class="text-gray-600">Research and discoveries</p>
+                </div>
+                <div onclick="filterByCategory('history')" class="text-center p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all cursor-pointer">
+                    <div class="text-6xl mb-4">📚</div>
+                    <h3 class="text-xl font-semibold mb-2">History</h3>
+                    <p class="text-gray-600">Past events and cultures</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="books" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4" id="books-title">Featured Books</h2>
+                <p class="text-gray-600" id="books-subtitle">Curated collection just for you</p>
+                <div class="flex justify-center space-x-4 mt-6">
+                    <button onclick="showAllBooks()" id="all-btn" class="px-6 py-2 bg-purple-600 text-white rounded-full font-semibold transition-colors">All Books</button>
+                    <button onclick="filterByCategory('fiction')" id="fiction-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors">Fiction</button>
+                    <button onclick="filterByCategory('science')" id="science-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors">Science</button>
+                    <button onclick="filterByCategory('history')" id="history-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors">History</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="products-grid">
+                <!-- Books will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Contact Us</h2>
+                <p class="text-gray-600">Get in touch with our library team</p>
+                <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mt-4 inline-block">
+                    <strong>📝 Demo Form:</strong> This is a sample contact form for demonstration purposes
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-2xl p-8 shadow-lg">
+                <form id="contact-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                            <input type="text" id="name" name="name" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                                   placeholder="Enter your full name" value="">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" id="email" name="email" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                                   placeholder="Enter your email" value="">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Create Password *</label>
+                        <input type="password" id="password" name="password" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                               placeholder="Create a secure password" value="">
+                        <p class="text-sm text-gray-500 mt-1">Password should be at least 8 characters long</p>
+                    </div>
+                    
+                    <div>
+                        <label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
+                        <select id="subject" name="subject" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors">
+                            <option value="">Select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="book-request">Book Request</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="membership">Membership</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+                        <textarea id="message" name="message" rows="5" 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors resize-none"
+                                  placeholder="Tell us how we can help you..."></textarea>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="newsletter" name="newsletter" 
+                               class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                        <label for="newsletter" class="ml-2 text-sm text-gray-700">
+                            Subscribe to our newsletter for book updates
+                        </label>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" 
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors transform hover:scale-105">
+                            Send Message 📧
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div class="text-center p-6 bg-blue-50 rounded-xl">
+                    <div class="text-3xl mb-3">📍</div>
+                    <h3 class="font-semibold mb-2">Visit Us</h3>
+                    <p class="text-gray-600">123 Library Street<br>BookVibe City, BC 12345</p>
+                </div>
+                <div class="text-center p-6 bg-green-50 rounded-xl">
+                    <div class="text-3xl mb-3">📞</div>
+                    <h3 class="font-semibold mb-2">Call Us</h3>
+                    <p class="text-gray-600">+1 (555) 123-4567<br>Mon-Fri 9AM-6PM</p>
+                </div>
+                <div class="text-center p-6 bg-purple-50 rounded-xl">
+                    <div class="text-3xl mb-3">✉️</div>
+                    <h3 class="font-semibold mb-2">Email Us</h3>
+                    <p class="text-gray-600">info@bookvibe.com<br>support@bookvibe.com</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-gray-800 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
+            <p class="text-gray-300 mb-8">Get the latest book releases and library updates delivered to your inbox</p>
+            <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition-colors">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="text-2xl font-bold mb-4">📚 BookVibe</div>
+                    <p class="text-gray-400">Digital library system for the modern reader.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Genres</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Fiction</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Science</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">History</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">📘</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">🐦</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">📷</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 BookVibe. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 cart-slide">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold">Borrowed Books</h2>
+                <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+        </div>
+        
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+            <div class="text-center text-gray-500 py-8">
+                <div class="text-4xl mb-4">📖</div>
+                <p>No borrowed books</p>
+            </div>
+        </div>
+        
+        <div id="cart-footer" class="border-t p-6 bg-gray-50">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-semibold">Total:</span>
+                <span id="cart-total" class="font-bold text-xl">$0.00</span>
+            </div>
+            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                Return Books 📚
+            </button>
+        </div>
+    </div>
+
+    <!-- Favorites Sidebar -->
+    <div id="favorites-sidebar" class="fixed top-0 left-0 h-full w-96 bg-white shadow-2xl z-50" style="transform: translateX(-100%); transition: transform 0.3s ease;">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold">My Favorites</h2>
+                <button onclick="toggleFavorites()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+        </div>
+        
+        <div id="favorites-items" class="flex-1 overflow-y-auto p-6">
+            <div class="text-center text-gray-500 py-8">
+                <div class="text-4xl mb-4">❤️</div>
+                <p>No favorites yet</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" onclick="toggleCart()"></div>
+    
+    <!-- Favorites Overlay -->
+    <div id="favorites-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" onclick="toggleFavorites()"></div>
+
+    <script>
+        // Sample book data
+        const products = [
+            // Fiction Books
+            {
+                id: 1,
+                name: "The Great Gatsby",
+                price: "Available",
+                image: "🥂",
+                description: "Classic American novel by F. Scott Fitzgerald",
+                rating: 4.9,
+                category: "fiction",
+                author: "F. Scott Fitzgerald"
+            },
+            {
+                id: 4,
+                name: "To Kill a Mockingbird",
+                price: "Available",
+                image: "🕊️",
+                description: "Timeless tale of justice and morality",
+                rating: 4.6,
+                category: "fiction",
+                author: "Harper Lee"
+            },
+            {
+                id: 6,
+                name: "1984",
+                price: "Available",
+                image: "👁️",
+                description: "Dystopian social science fiction novel",
+                rating: 4.5,
+                category: "fiction",
+                author: "George Orwell"
+            },
+            {
+                id: 7,
+                name: "Pride and Prejudice",
+                price: "Available",
+                image: "💕",
+                description: "Jane Austen's romantic masterpiece",
+                rating: 4.7,
+                category: "fiction",
+                author: "Jane Austen"
+            },
+            {
+                id: 8,
+                name: "The Catcher in the Rye",
+                price: "Available",
+                image: "🌾",
+                description: "Coming-of-age story by J.D. Salinger",
+                rating: 4.3,
+                category: "fiction",
+                author: "J.D. Salinger"
+            },
+            {
+                id: 9,
+                name: "Lord of the Flies",
+                price: "Available",
+                image: "🏝️",
+                description: "William Golding's survival tale",
+                rating: 4.4,
+                category: "fiction",
+                author: "William Golding"
+            },
+            // Science Books
+            {
+                id: 2,
+                name: "A Brief History of Time",
+                price: "Available",
+                image: "⏰",
+                description: "Cosmology explained by Stephen Hawking",
+                rating: 4.8,
+                category: "science",
+                author: "Stephen Hawking"
+            },
+            {
+                id: 5,
+                name: "The Origin of Species",
+                price: "Available",
+                image: "🐒",
+                description: "Darwin's theory of evolution",
+                rating: 4.8,
+                category: "science",
+                author: "Charles Darwin"
+            },
+            {
+                id: 10,
+                name: "Cosmos",
+                price: "Available",
+                image: "🌌",
+                description: "Carl Sagan's journey through the universe",
+                rating: 4.9,
+                category: "science",
+                author: "Carl Sagan"
+            },
+            {
+                id: 11,
+                name: "The Selfish Gene",
+                price: "Available",
+                image: "🧬",
+                description: "Richard Dawkins on evolution",
+                rating: 4.6,
+                category: "science",
+                author: "Richard Dawkins"
+            },
+            {
+                id: 12,
+                name: "Silent Spring",
+                price: "Available",
+                image: "🌱",
+                description: "Rachel Carson's environmental classic",
+                rating: 4.5,
+                category: "science",
+                author: "Rachel Carson"
+            },
+            {
+                id: 13,
+                name: "The Double Helix",
+                price: "Available",
+                image: "🧪",
+                description: "Watson's account of DNA discovery",
+                rating: 4.4,
+                category: "science",
+                author: "James Watson"
+            },
+            // History Books
+            {
+                id: 3,
+                name: "Sapiens",
+                price: "Available",
+                image: "🦴",
+                description: "A brief history of humankind",
+                rating: 4.7,
+                category: "history",
+                author: "Yuval Noah Harari"
+            },
+            {
+                id: 14,
+                name: "The Guns of August",
+                price: "Available",
+                image: "⚔️",
+                description: "Barbara Tuchman's WWI masterpiece",
+                rating: 4.6,
+                category: "history",
+                author: "Barbara Tuchman"
+            },
+            {
+                id: 15,
+                name: "A People's History of the United States",
+                price: "Available",
+                image: "🗽",
+                description: "Howard Zinn's alternative perspective",
+                rating: 4.5,
+                category: "history",
+                author: "Howard Zinn"
+            },
+            {
+                id: 16,
+                name: "The Diary of a Young Girl",
+                price: "Available",
+                image: "📔",
+                description: "Anne Frank's wartime diary",
+                rating: 4.8,
+                category: "history",
+                author: "Anne Frank"
+            },
+            {
+                id: 17,
+                name: "Guns, Germs, and Steel",
+                price: "Available",
+                image: "🌍",
+                description: "Jared Diamond's theory of civilization",
+                rating: 4.4,
+                category: "history",
+                author: "Jared Diamond"
+            },
+            {
+                id: 18,
+                name: "The Rise and Fall of the Third Reich",
+                price: "Available",
+                image: "🏛️",
+                description: "William Shirer's Nazi Germany chronicle",
+                rating: 4.7,
+                category: "history",
+                author: "William L. Shirer"
+            }
+        ];
+
+        let cart = [];
+        let favorites = [];
+
+        // Load books
+        function loadProducts(booksToShow = products) {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = booksToShow.map(product => `
+                <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="p-8 text-center">
+                        <div class="text-6xl mb-4">${product.image}</div>
+                        <h3 class="text-xl font-semibold mb-2">${product.name}</h3>
+                        <p class="text-sm text-gray-500 mb-2">by ${product.author}</p>
+                        <p class="text-gray-600 mb-4">${product.description}</p>
+                        <div class="flex justify-center items-center mb-4">
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="ml-1 text-sm text-gray-600">${product.rating}</span>
+                        </div>
+                        <div class="text-2xl font-bold text-green-600 mb-4">${product.price}</div>
+                        <div class="flex space-x-2">
+                            <button onclick="toggleFavorite(${product.id})" id="fav-btn-${product.id}" class="flex-1 bg-gray-100 hover:bg-pink-100 text-gray-700 hover:text-pink-600 py-3 rounded-lg font-semibold transition-colors">
+                                🤍 Favorite
+                            </button>
+                            <button onclick="addToCart(${product.id})" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                                Borrow Book 📖
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter books by category
+        function filterByCategory(category) {
+            const filteredBooks = products.filter(book => book.category === category);
+            loadProducts(filteredBooks);
+            
+            // Update title and subtitle
+            const title = document.getElementById('books-title');
+            const subtitle = document.getElementById('books-subtitle');
+            
+            switch(category) {
+                case 'fiction':
+                    title.textContent = 'Fiction Books';
+                    subtitle.textContent = 'Novels and short stories';
+                    break;
+                case 'science':
+                    title.textContent = 'Science Books';
+                    subtitle.textContent = 'Research and discoveries';
+                    break;
+                case 'history':
+                    title.textContent = 'History Books';
+                    subtitle.textContent = 'Past events and cultures';
+                    break;
+            }
+            
+            // Update button styles
+            updateFilterButtons(category);
+            
+            // Scroll to books section
+            document.getElementById('books').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show all books
+        function showAllBooks() {
+            loadProducts();
+            document.getElementById('books-title').textContent = 'Featured Books';
+            document.getElementById('books-subtitle').textContent = 'Curated collection just for you';
+            updateFilterButtons('all');
+        }
+
+        // Update filter button styles
+        function updateFilterButtons(activeCategory) {
+            const buttons = ['all-btn', 'fiction-btn', 'science-btn', 'history-btn'];
+            
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if ((activeCategory === 'all' && btnId === 'all-btn') ||
+                    (activeCategory === 'fiction' && btnId === 'fiction-btn') ||
+                    (activeCategory === 'science' && btnId === 'science-btn') ||
+                    (activeCategory === 'history' && btnId === 'history-btn')) {
+                    btn.className = 'px-6 py-2 bg-purple-600 text-white rounded-full font-semibold transition-colors';
+                } else {
+                    btn.className = 'px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors';
+                }
+            });
+        }
+
+        // Add to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCartUI();
+            showNotification(`${product.name} borrowed successfully!`);
+        }
+
+        // Remove from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        // Update quantity
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCartUI();
+                }
+            }
+        }
+
+        // Update cart UI
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            cartCount.textContent = totalItems;
+            cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <div class="text-4xl mb-4">🛒</div>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between py-4 border-b">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">${item.image}</span>
+                            <div>
+                                <h4 class="font-semibold">${item.name}</h4>
+                                <p class="text-gray-600">$${item.price}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">+</button>
+                            <button onclick="removeFromCart(${item.id})" class="ml-2 text-red-500 hover:text-red-700">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Toggle cart
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Scroll to products
+        function scrollToProducts() {
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Scroll to contact
+        function scrollToContact() {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Toggle favorite
+        function toggleFavorite(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingIndex = favorites.findIndex(item => item.id === productId);
+            const button = document.getElementById(`fav-btn-${productId}`);
+            
+            if (existingIndex > -1) {
+                favorites.splice(existingIndex, 1);
+                button.innerHTML = '🤍 Favorite';
+                button.className = 'flex-1 bg-gray-100 hover:bg-pink-100 text-gray-700 hover:text-pink-600 py-3 rounded-lg font-semibold transition-colors';
+                showNotification(`${product.name} removed from favorites`);
+            } else {
+                favorites.push(product);
+                button.innerHTML = '❤️ Favorited';
+                button.className = 'flex-1 bg-pink-100 hover:bg-pink-200 text-pink-600 py-3 rounded-lg font-semibold transition-colors';
+                showNotification(`${product.name} added to favorites!`);
+            }
+            
+            updateFavoritesCount();
+        }
+
+        // Toggle favorites sidebar
+        function toggleFavorites() {
+            const sidebar = document.getElementById('favorites-sidebar');
+            const overlay = document.getElementById('favorites-overlay');
+            
+            // Always update the favorites UI when toggling
+            updateFavoritesUI();
+            
+            // Toggle the sidebar animation
+            if (sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === 'translateX(0%)') {
+                sidebar.style.transform = 'translateX(-100%)';
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.style.transform = 'translateX(0%)';
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        // Update favorites count only
+        function updateFavoritesCount() {
+            const favoritesCount = document.getElementById('favorites-count');
+            
+            favoritesCount.textContent = favorites.length;
+            
+            if (favorites.length === 0) {
+                favoritesCount.classList.add('hidden');
+            } else {
+                favoritesCount.classList.remove('hidden');
+            }
+        }
+
+        // Update favorites UI (only called when sidebar is opened)
+        function updateFavoritesUI() {
+            const favoritesItems = document.getElementById('favorites-items');
+            
+            if (favorites.length === 0) {
+                favoritesItems.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <div class="text-4xl mb-4">❤️</div>
+                        <p>No favorites yet</p>
+                    </div>
+                `;
+            } else {
+                favoritesItems.innerHTML = favorites.map(item => `
+                    <div class="flex items-center justify-between py-4 border-b">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">${item.image}</span>
+                            <div>
+                                <h4 class="font-semibold">${item.name}</h4>
+                                <p class="text-gray-600">$${item.price}</p>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-yellow-400 text-sm">⭐</span>
+                                    <span class="ml-1 text-sm text-gray-600">${item.rating}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <button onclick="addToCart(${item.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                Add to Cart
+                            </button>
+                            <button onclick="toggleFavorite(${item.id})" class="text-red-500 hover:text-red-700 text-sm">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Handle contact form submission
+       // Handle contact form submission
+async function handleContactForm(event) { // <--- ADD 'async' HERE
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const contactData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        subject: formData.get('subject'),
+        message: formData.get('message'),
+        newsletter: formData.get('newsletter') === 'on',
+        // No need for timestamp here, the server will create it
+    };
+
+    // Send form data to the backend
+    try {
+        const response = await fetch('http://localhost:5000/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(contactData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log('Server response:', result);
+            // Show success message from the front-end
+            showNotification('Thank you! Your message has been sent successfully.');
+            // Reset the form
+            event.target.reset();
+        } else {
+            // If the server responds with an error, show it
+            throw new Error(result.message || 'Something went wrong on the server.');
+        }
+
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        // Show a user-friendly error notification
+        showNotification('Failed to send message. Please try again later.');
+    }
+}
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            
+            // Add contact form event listener
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', handleContactForm);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95fa562e26233c4c',t:'MTc1MjU5Mzc5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+                    
