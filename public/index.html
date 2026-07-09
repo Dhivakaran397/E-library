@@ -24,7 +24,7 @@
   body{
     font-family:'Inter', sans-serif;
     background-color: var(--bg);
-    background-image: url('user_dashboard_bg.jpg');
+    background-image: url('magical_books_bg.png');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
@@ -152,7 +152,10 @@
   /* ---------- App Shell ---------- */
   #appScreen{display:none;min-height:100vh;}
   header.topbar{
-    background:var(--ink-deep);
+    background: rgba(15, 42, 30, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     color:var(--parchment);
     padding:16px 28px;
     display:flex;
@@ -184,7 +187,17 @@
   }
   .logout-btn:hover{background:rgba(247,243,233,0.1);}
   
-  main{padding:26px 32px 60px;max-width:1180px;margin:0 auto;}
+  main{
+    padding:26px 32px 60px;
+    max-width:1180px;
+    margin: 30px auto;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
   .split-auth-container {
     display: flex;
     flex-direction: row;
