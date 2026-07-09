@@ -9,8 +9,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the current directory (for index.html, css, images)
-app.use(express.static(path.join(__dirname, '')));
+// Serve static files from the public directory (for index.html, css, images)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -156,7 +156,7 @@ app.delete('/api/books/:id', async (req, res) => {
 
 // Fallback for any other route (returns index.html)
 app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ================= START SERVER =================
