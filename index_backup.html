@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SmartLibrary — Digital Library Management</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f172a;
+    --bg-card:#1e293b;
+    --bg-card-hover:#263548;
+    --surface:#334155;
+    --border:#475569;
+    --primary:#6366f1;
+    --primary-light:#818cf8;
+    --primary-dark:#4f46e5;
+    --accent:#f59e0b;
+    --accent-light:#fbbf24;
+    --success:#22c55e;
+    --danger:#ef4444;
+    --text:#f1f5f9;
+    --text-muted:#94a3b8;
+    --text-dim:#64748b;
+  }
+  *{box-sizing:border-box;margin:0;}
+  body{
+    font-family:'Inter', sans-serif;
+    background-color: var(--bg);
+    background-image: url('page_bg.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+    color:var(--text);
+    min-height:100vh;
+  }
+  h1,h2,h3,.title-font{
+    font-family:'Playfair Display', Georgia, serif;
+  }
+
+  /* ---------- Login Screen ---------- */
+  #loginScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,27,75,0.7) 50%, rgba(15,23,42,0.8) 100%);
+  }
+  .catalog-card{
+    background:rgba(30,41,59,0.9);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(99,102,241,0.2);
+    border-radius:20px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.5), 0 0 100px rgba(99,102,241,0.08);
+    width:440px;
+    max-width:100%;
+    padding:48px 40px 40px;
+    position:relative;
+    animation:cardSlideIn 0.6s ease;
+  }
+  @keyframes cardSlideIn{
+    from{opacity:0;transform:translateY(24px) scale(0.98);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .catalog-card:before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:3px;
+    background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));
+    border-radius:20px 20px 0 0;
+  }
+  .stamp{
+    font-size:10px;
+    letter-spacing:3px;
+    color:var(--primary-light);
+    text-transform:uppercase;
+    margin-bottom:10px;
+    font-weight:600;
+  }
+  .catalog-card h1{
+    margin:0 0 8px;
+    font-size:30px;
+    color:#fff;
+    letter-spacing:-0.5px;
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+  }
+  .catalog-card h1 span.brand-accent{color:var(--primary-light);}
+  .catalog-card p.sub{
+    margin:0 0 32px;
+    color:var(--text-muted);
+    font-size:14px;
+    line-height:1.6;
+  }
+  .role-choice{
+    display:flex;
+    gap:10px;
+    margin-bottom:24px;
+  }
+  .role-btn{
+    flex:1;
+    padding:14px 8px;
+    border:2px solid var(--surface);
+    background:transparent;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-muted);
+    transition:all .2s ease;
+    text-align:center;
+    font-family:'Inter',sans-serif;
+  }
+  .role-btn:hover{border-color:var(--primary);color:var(--text);}
+  .role-btn.active{
+    background:var(--primary);
+    color:#fff;
+    border-color:var(--primary);
+    box-shadow:0 4px 18px rgba(99,102,241,0.35);
+  }
+  #adminPassRow{display:none;margin-bottom:18px;}
+  .hero-search-wrapper input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border: 1.5px solid rgba(99,102,241,0.3);
+    border-radius: 12px;
+    font-size: 14px;
+    background: rgba(15,23,42,0.5);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+  }
+  .hero-search-wrapper input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    background: rgba(15,23,42,0.7);
+  }
+  .hero-search-wrapper input::placeholder {
+    color: var(--text-dim);
+  }
+  input[type=text],input[type=password],input[type=number],select{
+    width:100%;
+    padding:12px 16px;
+    border:1.5px solid var(--surface);
+    border-radius:10px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+    background:rgba(15,23,42,0.6);
+    color:var(--text);
+    transition:all .2s ease;
+  }
+  input:focus,select:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(99,102,241,0.2);
+    background:rgba(15,23,42,0.8);
+  }
+  input::placeholder{color:var(--text-dim);}
+  label.small-label{
+    display:block;
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:8px;
+    font-weight:600;
+  }
+  .go-btn{
+    width:100%;
+    padding:14px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:.3px;
+    transition:all .2s ease;
+    box-shadow:0 4px 20px rgba(99,102,241,0.35);
+    font-family:'Inter',sans-serif;
+  }
+  .go-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 28px rgba(99,102,241,0.45);
+  }
+  .go-btn:active{transform:translateY(0);}
+  #loginError{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:12px;
+    display:none;
+    background:rgba(239,68,68,0.1);
+    padding:10px 14px;
+    border-radius:8px;
+    border-left:3px solid var(--danger);
+  }
+  .hint{
+    margin-top:20px;
+    font-size:11.5px;
+    color:var(--text-dim);
+    text-align:center;
+    padding:10px 14px;
+    background:rgba(99,102,241,0.06);
+    border:1px solid rgba(99,102,241,0.1);
+    border-radius:10px;
+  }
+  .hint b{color:var(--accent);}
+    background:rgba(255,253,247,0.85);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(217,205,176,0.6);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(15,42,30,0.2), 0 0 0 1px rgba(255,255,255,0.3) inset;
+    width:420px;
+    max-width:100%;
+    padding:44px 38px 36px;
+    position:relative;
+    animation:cardSlideIn 0.6s ease;
+  }
+  @keyframes cardSlideIn{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .catalog-card:before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:4px;
+    background:linear-gradient(90deg,var(--ink),var(--gold),var(--ink));
+    border-radius:16px 16px 0 0;
+  }
+  .stamp{
+    font-size:10px;
+    letter-spacing:2.5px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:8px;
+    font-weight:600;
+  }
+  .catalog-card h1{
+    margin:0 0 6px;
+    font-size:32px;
+    color:var(--ink-deep);
+    letter-spacing:-0.5px;
+  }
+  .catalog-card p.sub{
+    margin:0 0 30px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+  .role-choice{
+    display:flex;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .role-btn{
+    flex:1;
+    padding:14px 8px;
+    border:2px solid var(--line);
+    background:rgba(247,243,233,0.5);
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink-deep);
+    transition:all .2s ease;
+    text-align:center;
+  }
+  .role-btn:hover{border-color:var(--gold);background:rgba(184,135,58,0.06);}
+  .role-btn.active{
+    background:linear-gradient(135deg,#1B4332,#2E7D6E);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 4px 14px rgba(27,67,50,0.3);
+  }
+  #adminPassRow{display:none;margin-bottom:18px;}
+  input[type=text],input[type=password],input[type=number],select{
+    width:100%;
+    padding:12px 16px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+    background:rgba(255,255,255,0.8);
+    color:var(--text);
+    transition:all .2s ease;
+  }
+  input:focus,select:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(184,135,58,0.15);
+    background:#fff;
+  }
+  label.small-label{
+    display:block;
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:8px;
+    font-weight:600;
+  }
+  .go-btn{
+    width:100%;
+    padding:14px;
+    background:linear-gradient(135deg,#1B4332,#2E7D6E);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:.3px;
+    transition:all .2s ease;
+    box-shadow:0 4px 16px rgba(27,67,50,0.3);
+    font-family:'Inter',sans-serif;
+  }
+  .go-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 6px 20px rgba(27,67,50,0.4);
+  }
+  .go-btn:active{transform:translateY(0);}
+  #loginError{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:12px;
+    display:none;
+    background:rgba(156,59,59,0.08);
+    padding:10px 14px;
+    border-radius:8px;
+    border-left:3px solid var(--danger);
+  }
+  .hint{
+    margin-top:20px;
+    font-size:11.5px;
+    color:var(--muted);
+    text-align:center;
+    padding:10px;
+    background:rgba(27,67,50,0.04);
+    border-radius:8px;
+  }
+
+  /* ---------- App Shell ---------- */
+  #appScreen{display:none;min-height:100vh;}
+  header.topbar{
+    background:rgba(15,23,42,0.95);
+    backdrop-filter:blur(12px);
+    color:var(--text);
+    padding:12px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 1px 0 rgba(71,85,105,0.3);
+    position:sticky;
+    top:0;
+    z-index:40;
+  }
+  header.topbar .brand{
+    display:flex;align-items:center;gap:10px;
+  }
+  header.topbar .brand span.mark{
+    display:inline-flex;width:28px;height:28px;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    border-radius:8px;align-items:center;justify-content:center;
+    font-size:14px;color:#fff;
+  }
+  header.topbar h2{
+    margin:0;font-size:17px;font-weight:700;letter-spacing:-.2px;
+    color:#fff;
+  }
+  header.topbar h2 span.brand-accent{color:var(--primary-light);font-weight:800;}
+  header.topbar .who{
+    font-size:12px;color:var(--text-muted);font-weight:500;
+  }
+  .logout-btn{
+    background:rgba(99,102,241,0.1);
+    border:1px solid rgba(99,102,241,0.25);
+    color:var(--primary-light);
+    padding:7px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:500;
+    font-family:'Inter',sans-serif;
+    transition:all .2s ease;
+  }
+  .logout-btn:hover{
+    background:rgba(99,102,241,0.2);
+    border-color:var(--primary);
+  }
+
+  main{padding:24px 32px 60px;max-width:1220px;margin:0 auto;}
+
+  .toolbar{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .toolbar input[type=text]{max-width:280px;}
+  .toolbar select{max-width:200px;}
+  .stat-pill{
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:13px;
+    color:var(--ink-deep);
+  }
+  .stat-pill b{color:var(--gold);}
+
+  /* card grid */
+  .shelf-heading{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:28px 0 14px;
+    border-bottom:1px solid var(--surface);
+    padding-bottom:10px;
+  }
+  .shelf-heading .cat-dot{
+    width:10px;height:10px;border-radius:50%;flex-shrink:0;
+  }
+  .shelf-heading h3{margin:0;color:#fff;font-size:18px;font-weight:600;}
+  .shelf-heading .count{
+    font-size:11px;color:var(--bg);padding:3px 10px;border-radius:12px;
+    background:var(--primary);font-weight:600;
+  }
+
+  .book-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:16px;
+  }
+  .book-card{
+    background:var(--bg-card);
+    border:1px solid rgba(71,85,105,0.4);
+    border-radius:14px;
+    padding:16px 16px 14px;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    transition:all .25s ease;
+  }
+  .book-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 32px rgba(0,0,0,0.3);
+    border-color:rgba(99,102,241,0.3);
+    background:var(--bg-card-hover);
+  }
+  .book-card.borrowed-card{
+    background:rgba(99,102,241,0.08);
+    border-color:var(--primary);
+  }
+  .book-card.borrowed-card .borrowed-ribbon{
+    position:absolute;top:12px;left:-4px;z-index:5;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;font-size:10px;font-weight:700;
+    padding:4px 14px 4px 10px;border-radius:0 6px 6px 0;
+    letter-spacing:0.5px;text-transform:uppercase;
+    box-shadow:0 2px 8px rgba(99,102,241,0.35);
+  }
+  .book-card.borrowed-card .borrowed-ribbon::before{
+    content:'';position:absolute;left:0;bottom:-5px;
+    border:2.5px solid var(--primary-dark);border-right-color:transparent;border-bottom-color:transparent;
+  }
+  .book-card .spine{
+    position:absolute;top:0;left:0;bottom:0;width:4px;
+    background:var(--primary);
+    border-radius:14px 0 0 14px;
+  }
+  .book-card .spine.cat-fiction{background:linear-gradient(180deg,#ef4444,#f87171);}
+  .book-card .spine.cat-science{background:linear-gradient(180deg,#22c55e,#4ade80);}
+  .book-card .spine.cat-history{background:linear-gradient(180deg,#f59e0b,#fbbf24);}
+  .book-card .spine.cat-technology{background:linear-gradient(180deg,#6366f1,#818cf8);}
+  .book-card .spine.cat-biography{background:linear-gradient(180deg,#a855f7,#c084fc);}
+  .book-cover{
+    width:100%;
+    height:110px;
+    border-radius:4px;
+    margin-left:2px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);
+  }
+  .book-cover:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(160deg, rgba(255,255,255,0.10), rgba(0,0,0,0.30));
+    z-index:2;
+    pointer-events:none;
+  }
+  .book-cover .cover-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:1;
+  }
+  .book-cover .cover-fallback{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:0;
+  }
+  .book-cover .initial{
+    font-family:Georgia,serif;
+    font-size:34px;
+    color:rgba(255,253,247,0.92);
+    text-shadow:0 2px 6px rgba(0,0,0,0.25);
+    z-index:1;
+  }
+  .book-cover .spine-line{
+    position:absolute;left:14px;top:0;bottom:0;width:2px;
+    background:rgba(255,255,255,0.35);
+  }
+  .fav-star{
+    position:absolute;
+    top:10px;right:10px;
+    background:rgba(30,41,59,0.85);
+    border:none;
+    width:28px;height:28px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:15px;
+    line-height:28px;
+    text-align:center;
+    padding:0;
+    z-index:2;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+    color:var(--accent);
+    transition:all .2s ease;
+  }
+  .fav-star:hover{background:rgba(30,41,59,0.95);transform:scale(1.1);}
+  .fav-star.active{color:#ef4444;}
+  .book-title{font-weight:600;font-size:15px;color:#fff;margin:0;padding-left:6px;}
+  .book-author{font-size:12.5px;color:var(--text-muted);padding-left:6px;}
+  .badge-row{display:flex;gap:6px;padding-left:6px;margin-top:4px;flex-wrap:wrap;}
+  .badge{
+    font-size:10.5px;
+    padding:3px 9px;
+    border-radius:6px;
+    font-weight:600;
+    background:rgba(99,102,241,0.1);
+    color:var(--primary-light);
+  }
+  .badge.avail{background:rgba(34,197,94,0.12);color:#4ade80;}
+  .badge.low{background:rgba(239,68,68,0.12);color:#f87171;font-weight:700;}
+  .badge.cat-tag{font-weight:500;}
+  .badge.cat-fiction{background:rgba(239,68,68,0.1);color:#f87171;}
+  .badge.cat-science{background:rgba(34,197,94,0.1);color:#4ade80;}
+  .badge.cat-history{background:rgba(245,158,11,0.12);color:#fbbf24;}
+  .badge.cat-technology{background:rgba(99,102,241,0.1);color:#818cf8;}
+  .badge.cat-biography{background:rgba(168,85,247,0.1);color:#c084fc;}
+  .card-actions{margin-top:10px;padding-left:6px;display:flex;gap:8px;}
+  .btn-sm{
+    border:none;
+    border-radius:8px;
+    padding:8px 14px;
+    font-size:12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:all .2s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .btn-borrow{background:var(--primary);color:#fff;box-shadow:0 2px 10px rgba(99,102,241,0.3);}
+  .btn-borrow:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(99,102,241,0.45);}
+  .btn-borrow:disabled{background:var(--surface);color:var(--text-dim);cursor:not-allowed;box-shadow:none;transform:none;}
+  .btn-return{background:var(--accent);color:var(--bg);box-shadow:0 2px 10px rgba(245,158,11,0.3);font-weight:700;}
+  .btn-return:hover{transform:scale(1.05);}
+  .btn-edit{background:transparent;border:1px solid var(--surface);color:var(--text-muted);}
+  .btn-edit:hover{background:var(--surface);color:var(--text);}
+  .btn-del{background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;}
+  .btn-del:hover{background:rgba(239,68,68,0.1);}
+
+  /* Activity Log */
+  .activity-log{
+    background:var(--bg-card);
+    border:1px solid rgba(71,85,105,0.4);
+    border-radius:14px;
+    padding:20px 22px;
+    margin-bottom:26px;
+    max-height:300px;
+    overflow-y:auto;
+  }
+  .activity-log h3{margin:0 0 14px;color:#fff;font-size:16px;display:flex;align-items:center;gap:8px;}
+  .activity-log .log-empty{color:var(--text-dim);font-style:italic;font-size:13px;}
+  .log-item{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 0;border-bottom:1px solid rgba(71,85,105,0.3);
+    font-size:13px;
+    animation:fadeIn 0.3s ease;
+  }
+  .log-item:last-child{border-bottom:none;}
+  .log-icon{
+    width:32px;height:32px;border-radius:8px;display:flex;
+    align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+  }
+  .log-icon.borrow{background:rgba(99,102,241,0.15);}
+  .log-icon.return{background:rgba(245,158,11,0.15);}
+  .log-icon.add{background:rgba(34,197,94,0.15);}
+  .log-icon.delete{background:rgba(239,68,68,0.15);}
+  .log-icon.edit{background:rgba(99,102,241,0.15);}
+  .log-details{flex:1;}
+  .log-details .log-action{font-weight:600;color:var(--text);}
+  .log-details .log-time{font-size:11px;color:var(--text-dim);margin-top:2px;}
+
+  /* admin form */
+  .panel{
+    background:var(--bg-card);
+    border:1px solid rgba(71,85,105,0.4);
+    border-radius:14px;
+    padding:24px 26px;
+    margin-bottom:26px;
+  }
+  .panel h3{margin-top:0;color:#fff;}
+  .form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .field label{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:5px;}
+
+  #toast{
+    position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+    background:var(--bg-card);
+    color:var(--text);
+    padding:14px 26px;border-radius:12px;font-size:13.5px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    display:none;
+    z-index:50;
+    font-weight:500;
+    border:1px solid rgba(99,102,241,0.3);
+    animation:toastIn 0.3s ease;
+  }
+  @keyframes toastIn{
+    from{opacity:0;transform:translateX(-50%) translateY(10px);}
+    to{opacity:1;transform:translateX(-50%) translateY(0);}
+  }
+  .empty-note{color:var(--text-dim);font-size:13.5px;font-style:italic;padding:10px 0;}
+
+  /* ---------- Edit Modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,0.75);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--bg-card);
+    border-radius:16px;
+    border:1px solid rgba(71,85,105,0.5);
+    padding:28px 30px;
+    width:100%;
+    max-width:480px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    animation:cardSlideIn 0.3s ease;
+  }
+  .modal-box h3{margin-top:0;color:#fff;}
+
+  /* ---------- Welcome Hero Banners ---------- */
+  .hero-banner {
+    position: relative;
+    border-radius: 16px;
+    background: url('library_bg.png') no-repeat center center;
+    background-size: cover;
+    padding: 50px 40px;
+    margin-bottom: 26px;
+    color: #fff;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    border: 1px solid rgba(99,102,241,0.2);
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,27,75,0.75) 60%, rgba(99,102,241,0.3) 100%);
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 650px;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.35);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--primary-light);
+    margin-bottom: 12px;
+    animation: fadeIn 0.8s ease;
+  }
+  .hero-title {
+    font-size: 38px;
+    margin: 0 0 12px;
+    font-weight: 800;
+    text-shadow: none;
+    line-height: 1.2;
+    font-family:'Inter', sans-serif;
+    letter-spacing:-1px;
+  }
+  .hero-subtitle {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(247,243,233,0.85);
+    margin: 0 0 24px;
+  }
+  
+  /* Integrated Search Bar inside Hero */
+  .hero-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border-radius: 30px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  .hero-search-wrapper:focus-within {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: var(--gold);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  }
+  .hero-search-wrapper .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+  }
+  .hero-search-wrapper:focus-within .search-icon {
+    color: var(--ink-deep);
+  }
+  .hero-search-wrapper input {
+    width: 100%;
+    padding: 14px 20px 14px 48px;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #fff;
+    font-size: 15px;
+    transition: color 0.3s ease;
+  }
+  .hero-search-wrapper:focus-within input {
+    color: var(--text);
+  }
+  .hero-search-wrapper input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .hero-search-wrapper:focus-within input::placeholder {
+    color: var(--muted);
+  }
+
+  /* Glassmorphism Dashboard Stats Panel */
+  .hero-stats {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .hero-stat-item {
+    background: rgba(30,41,59,0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(99,102,241,0.15);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.2s ease;
+  }
+  .hero-stat-item:hover {
+    transform: translateY(-2px);
+    background: rgba(30,41,59,0.8);
+    border-color: rgba(99,102,241,0.3);
+  }
+  .hero-stat-item .stat-icon {
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .hero-stat-item .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-stat-item .stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .hero-stat-item .stat-lbl {
+    font-size: 11px;
+    color: rgba(247, 243, 233, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Enhanced Toolbar styles */
+  .toolbar-enhanced {
+    background: var(--bg-card);
+    border: 1px solid rgba(71,85,105,0.4);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .toolbar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .fav-toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--surface);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+  .fav-toggle-pill input {
+    display: none;
+  }
+  .fav-toggle-pill:has(input:checked) {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media(max-width:600px){
+    main{padding:18px;}
+    header.topbar{padding:14px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen">
+  <div class="catalog-card">
+    <div class="stamp">SMART LIBRARY SYSTEM</div>
+    <h1><span class="brand-accent">Smart</span>Library</h1>
+    <p class="sub">Sign in to browse, borrow, and manage the digital collection.</p>
+
+    <label class="small-label">I am a</label>
+    <div class="role-choice">
+      <button type="button" class="role-btn active" id="btnUserRole" onclick="selectRole('user')">📖 Reader</button>
+      <button type="button" class="role-btn" id="btnAdminRole" onclick="selectRole('admin')">⚙️ Admin</button>
+    </div>
+
+    <div id="adminPassRow">
+      <label class="small-label">Admin Passcode</label>
+      <input type="password" id="adminPass" placeholder="Enter admin passcode">
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label class="small-label">Your Name</label>
+      <input type="text" id="userName" placeholder="e.g. Priya Sharma">
+    </div>
+
+    <button class="go-btn" onclick="doLogin()">🚀 Launch Dashboard</button>
+    <div id="loginError">Invalid passcode. Try "library123".</div>
+    <div class="hint">Demo passcode for Admin access: <b>library123</b></div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="appScreen">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">📚</span>
+      <h2><span class="brand-accent">Smart</span>Library</h2>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span class="who" id="whoLabel"></span>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- USER VIEW -->
+    <div id="userView">
+      <div class="hero-banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">Reader Dashboard</div>
+          <h1 class="hero-title" id="userWelcomeTitle">Hello Reader!</h1>
+          <p class="hero-subtitle">Browse our catalog, borrow books, and manage your reading list.</p>
+          
+          <div class="hero-search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchBox" placeholder="Search title or author..." oninput="renderUserShelves()">
+          </div>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <span class="stat-icon">📚</span>
+            <div class="stat-info">
+              <span class="stat-val"><span id="availCount">0</span> / <span id="totalCount">0</span></span>
+              <span class="stat-lbl">Available / Total</span>
+            </div>
+          </div>
+          <div class="hero-stat-item">
+            <span class="stat-icon">📖</span>
+            <div class="stat-info">
+              <span class="stat-val" id="myBorrowedVal">0</span>
+              <span class="stat-lbl">Borrowed Books</span>
+            </div>
+          </div>
+          <div class="hero-stat-item">
+            <span class="stat-icon">⭐</span>
+            <div class="stat-info">
+              <span class="stat-val" id="myFavoritesVal">0</span>
+              <span class="stat-lbl">My Favorites</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar-enhanced">
+        <div class="toolbar-group">
+          <label class="small-label" style="margin-bottom:4px;">Filter Category</label>
+          <select id="categoryFilter" onchange="renderUserShelves()">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+        <div class="toolbar-group" style="align-self: flex-end;">
+          <label class="fav-toggle-pill">
+            <input type="checkbox" id="favOnlyToggle" onchange="renderUserShelves()">
+            <span>⭐ Show favorites only</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="userShelves"></div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div id="adminView" style="display:none;">
+      <div class="hero-banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">Admin Dashboard</div>
+          <h1 class="hero-title" id="adminWelcomeTitle">Hello Admin</h1>
+          <p class="hero-subtitle">Manage the collection — add, update, and organize the catalog.</p>
+          
+          <div class="hero-search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="adminSearchBox" placeholder="Search title or author..." oninput="renderAdminShelves()">
+          </div>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <span class="stat-icon">📚</span>
+            <div class="stat-info">
+              <span class="stat-val" id="adminTotalTitles">0</span>
+              <span class="stat-lbl">Total Titles</span>
+            </div>
+          </div>
+          <div class="hero-stat-item">
+            <span class="stat-icon">📦</span>
+            <div class="stat-info">
+              <span class="stat-val" id="adminTotalCopies">0</span>
+              <span class="stat-lbl">Total Copies</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar-enhanced">
+        <div class="toolbar-group">
+          <label class="small-label" style="margin-bottom:4px;">Filter Category</label>
+          <select id="adminCategoryFilter" onchange="renderAdminShelves()">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Add a New Book</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label>Title</label>
+            <input type="text" id="newTitle" placeholder="Book title">
+          </div>
+          <div class="field">
+            <label>Author</label>
+            <input type="text" id="newAuthor" placeholder="Author name">
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="newCategory"></select>
+          </div>
+          <div class="field">
+            <label>Copies</label>
+            <input type="number" id="newCopies" min="1" value="5">
+          </div>
+          <div class="field">
+            <label>Cover Image URL (optional)</label>
+            <input type="text" id="newImage" placeholder="https://... (leave blank for auto cover)">
+          </div>
+        </div>
+        <button class="go-btn" style="width:auto;padding:10px 22px;" onclick="addBook()">Add Book</button>
+      </div>
+
+      <div class="activity-log" id="activityLog">
+        <h3>📋 Activity Log</h3>
+        <div id="logEntries"><p class="log-empty">No activity yet. Borrow/return actions will appear here.</p></div>
+      </div>
+
+      <div id="adminShelves"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ================= EDIT BOOK MODAL ================= -->
+<div id="editModalOverlay" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Update Book</h3>
+    <div class="form-grid">
+      <div class="field">
+        <label>Title</label>
+        <input type="text" id="editTitle">
+      </div>
+      <div class="field">
+        <label>Author</label>
+        <input type="text" id="editAuthor">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="editCategory"></select>
+      </div>
+      <div class="field">
+        <label>Copies</label>
+        <input type="number" id="editCopies" min="0">
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Cover Image URL (optional)</label>
+        <input type="text" id="editImage" placeholder="https://... (leave blank for auto cover)">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+      <button class="btn-sm btn-edit" onclick="closeEditModal()">Cancel</button>
+      <button class="go-btn" style="width:auto;padding:9px 20px;" onclick="saveEditModal()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const categories = ["Fiction","Science","History","Technology","Biography"];
+
+let books = [
+  // Fiction
+  {id:1, title:"The Silent Orchard", author:"Meera Kapoor", category:"Fiction", copies:5, available:5},
+  {id:2, title:"Letters from Monsoon", author:"Arjun Dev", category:"Fiction", copies:5, available:3},
+  {id:3, title:"The Clockmaker's Daughter", author:"Elena Voss", category:"Fiction", copies:5, available:5},
+  {id:4, title:"Paper Boats at Midnight", author:"Farah Iqbal", category:"Fiction", copies:5, available:0},
+  {id:5, title:"The Last Lighthouse", author:"Tom Hardgrave", category:"Fiction", copies:5, available:4},
+  // Science
+  {id:6, title:"A Brief History of Everything", author:"Dr. S. Rao", category:"Science", copies:5, available:5},
+  {id:7, title:"The Quantum Garden", author:"Nina Petrov", category:"Science", copies:5, available:2},
+  {id:8, title:"Wired for Wonder", author:"Kabir Malhotra", category:"Science", copies:5, available:5},
+  {id:9, title:"Beneath the Microscope", author:"Grace Lin", category:"Science", copies:5, available:1},
+  {id:10, title:"The Physics of Everyday Things", author:"J. Fernsby", category:"Science", copies:5, available:5},
+  // History
+  {id:11, title:"Empires of Sand", author:"Rahul Sen", category:"History", copies:5, available:5},
+  {id:12, title:"The Forgotten Treaty", author:"Clara Winters", category:"History", copies:5, available:3},
+  {id:13, title:"Voices of the Old City", author:"Imran Qureshi", category:"History", copies:5, available:0},
+  {id:14, title:"Kings, Coins & Chronicles", author:"Alison Brook", category:"History", copies:5, available:5},
+  {id:15, title:"The Long March Home", author:"Devika Nair", category:"History", copies:5, available:4},
+  // Technology
+  {id:16, title:"Code & Clay", author:"Wei Zhang", category:"Technology", copies:5, available:5},
+  {id:17, title:"Machines That Dream", author:"Priya Menon", category:"Technology", copies:5, available:2},
+  {id:18, title:"The Circuit Whisperer", author:"Oscar Bell", category:"Technology", copies:5, available:5},
+  {id:19, title:"Silicon Roots", author:"Ananya Bose", category:"Technology", copies:5, available:0},
+  {id:20, title:"Building Tomorrow, Byte by Byte", author:"Leo Fontaine", category:"Technology", copies:5, available:5},
+  // Biography
+  {id:21, title:"The Gardener of Ideas", author:"Sophia Reyes", category:"Biography", copies:5, available:5},
+  {id:22, title:"A Life Unbound", author:"Vikram Chatterjee", category:"Biography", copies:5, available:3},
+  {id:23, title:"Notes from a Quiet Revolution", author:"Hannah Ostrow", category:"Biography", copies:5, available:5},
+  {id:24, title:"The Weight of Ink", author:"Samuel Achebe", category:"Biography", copies:5, available:1},
+  {id:25, title:"Between Two Rivers", author:"Layla Haddad", category:"Biography", copies:5, available:5}
+];
+
+let currentUser = null; // {role:'user'|'admin', name:'...'}
+let myBorrowed = new Set(); // book ids borrowed by current reader session
+let myFavorites = new Set(); // book ids favorited by current reader session
+let activityLog = []; // {type, user, bookTitle, time}
+
+const categoryColors = {
+  'Fiction':'#C0392B','Science':'#1E8449','History':'#D4A017','Technology':'#2471A3','Biography':'#8E44AD'
+};
+function catClass(cat){ return 'cat-'+cat.toLowerCase(); }
+
+const ADMIN_PASS = "library123";
+
+/* cover colors per category, so each shelf reads visually distinct */
+const categoryCoverColors = {
+  "Fiction":     "linear-gradient(135deg,#7A3B3B,#9C5252)",
+  "Science":     "linear-gradient(135deg,#1F5C52,#2E7D6E)",
+  "History":     "linear-gradient(135deg,#8A6425,#B8873A)",
+  "Technology":  "linear-gradient(135deg,#274472,#3D5F8A)",
+  "Biography":   "linear-gradient(135deg,#5B3A66,#7D5490)"
+};
+function coverGradient(cat){
+  return categoryCoverColors[cat] || "linear-gradient(135deg,#3A3A32,#5A5A4E)";
+}
+function bookInitial(title){
+  return (title.trim().charAt(0) || "?").toUpperCase();
+}
+function bookCoverHtml(book){
+  const coverUrl = (book.image && book.image.trim()) ? book.image.trim() : `https://picsum.photos/seed/book${book.id}/300/400`;
+  return `
+    <div class="book-cover" style="background:${coverGradient(book.category)};">
+      <div class="cover-fallback">
+        <span class="spine-line"></span>
+        <span class="initial">${bookInitial(book.title)}</span>
+      </div>
+      <img class="cover-img" src="${coverUrl}" alt="Cover of ${escapeHtml(book.title)}" loading="lazy" onerror="this.style.display='none';">
+    </div>`;
+}
+
+/* ---------------- LOGIN ---------------- */
+function selectRole(role){
+  document.getElementById('btnUserRole').classList.toggle('active', role==='user');
+  document.getElementById('btnAdminRole').classList.toggle('active', role==='admin');
+  document.getElementById('adminPassRow').style.display = role==='admin' ? 'block' : 'none';
+  document.getElementById('loginScreen').dataset.role = role;
+}
+selectRole('user');
+
+function doLogin(){
+  const role = document.getElementById('loginScreen').dataset.role || 'user';
+  const name = document.getElementById('userName').value.trim() || (role==='admin' ? 'Librarian' : 'Reader');
+  const errEl = document.getElementById('loginError');
+
+  if(role === 'admin'){
+    const pass = document.getElementById('adminPass').value;
+    if(pass !== ADMIN_PASS){
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+  errEl.style.display = 'none';
+  currentUser = {role, name};
+  myBorrowed = new Set();
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  document.getElementById('whoLabel').textContent =
+    (role==='admin' ? '📚 Librarian: ' : '🪶 Reader: ') + name;
+
+  if(role === 'admin'){
+    document.getElementById('userView').style.display = 'none';
+    document.getElementById('adminView').style.display = 'block';
+    document.getElementById('adminWelcomeTitle').textContent = 'Hello ' + name;
+    populateCategorySelects();
+    renderAdminShelves();
+  } else {
+    document.getElementById('userView').style.display = 'block';
+    document.getElementById('adminView').style.display = 'none';
+    document.getElementById('userWelcomeTitle').textContent = 'Hello ' + name + '!';
+    populateCategorySelects();
+    renderUserShelves();
+  }
+}
+
+function logout(){
+  currentUser = null;
+  myFavorites = new Set();
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPass').value = '';
+  document.getElementById('userName').value = '';
+}
+
+function populateCategorySelects(){
+  const selects = [
+    document.getElementById('categoryFilter'),
+    document.getElementById('adminCategoryFilter'),
+    document.getElementById('newCategory')
+  ];
+  selects.forEach(sel=>{
+    if(!sel) return;
+    const isFilter = sel.id.includes('Filter');
+    sel.innerHTML = isFilter ? '<option value="all">All Categories</option>' : '';
+    categories.forEach(c=>{
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+/* ---------------- TOAST ---------------- */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.style.display='none', 2200);
+}
+
+/* ---------------- USER VIEW ---------------- */
+function renderUserShelves(){
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  const catFilter = document.getElementById('categoryFilter').value;
+  const favOnly = document.getElementById('favOnlyToggle').checked;
+  const container = document.getElementById('userShelves');
+  container.innerHTML = '';
+
+  let totalAvail = 0, total = 0;
+  const cats = catFilter === 'all' ? categories : [catFilter];
+
+  cats.forEach(cat=>{
+    const catBooks = books.filter(b=>
+      b.category === cat &&
+      (b.title.toLowerCase().includes(search) || b.author.toLowerCase().includes(search)) &&
+      (!favOnly || myFavorites.has(b.id))
+    );
+    total += books.filter(b=>b.category===cat).length;
+    if(catBooks.length === 0) return;
+
+    const heading = document.createElement('div');
+    heading.className = 'shelf-heading';
+    heading.innerHTML = `<span class="cat-dot" style="background:${categoryColors[cat]||'#888'}"></span><h3>${cat}</h3><span class="count">${catBooks.length} title(s)</span>`;
+    container.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'book-grid';
+    catBooks.forEach(b=>{
+      totalAvail += b.available;
+      const borrowedByMe = myBorrowed.has(b.id);
+      const isFav = myFavorites.has(b.id);
+      const card = document.createElement('div');
+      card.className = 'book-card' + (borrowedByMe ? ' borrowed-card' : '');
+      card.innerHTML = `
+        <div class="spine ${catClass(b.category)}"></div>
+        ${borrowedByMe ? '<div class="borrowed-ribbon">📖 Borrowed</div>' : ''}
+        ${bookCoverHtml(b)}
+        <button class="fav-star ${isFav?'active':''}" onclick="toggleFavorite(${b.id})" title="${isFav?'Remove from favorites':'Add to favorites'}">${isFav?'★':'☆'}</button>
+        <p class="book-title">${escapeHtml(b.title)}</p>
+        <div class="book-author">by ${escapeHtml(b.author)}</div>
+        <div class="badge-row">
+          <span class="badge cat-tag ${catClass(b.category)}">${b.category}</span>
+          <span class="badge ${b.available===0?'low':'avail'}">${b.available} of ${b.copies} avail</span>
+        </div>
+        <div class="card-actions">
+          ${borrowedByMe
+            ? `<button class="btn-sm btn-return" onclick="returnBook(${b.id})">↩ Return</button>`
+            : `<button class="btn-sm btn-borrow" ${b.available===0?'disabled':''} onclick="borrowBook(${b.id})">📖 Borrow</button>`
+          }
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  });
+
+  if(container.innerHTML === ''){
+    container.innerHTML = `<p class="empty-note">${favOnly ? 'You haven\'t marked any favorites yet.' : 'No books match your search on these shelves.'}</p>`;
+  }
+
+  document.getElementById('availCount').textContent = totalAvail;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('myBorrowedVal').textContent = myBorrowed.size;
+  document.getElementById('myFavoritesVal').textContent = myFavorites.size;
+}
+
+function toggleFavorite(id){
+  const b = books.find(x=>x.id===id);
+  if(!b) return;
+  if(myFavorites.has(id)){
+    myFavorites.delete(id);
+    showToast(`Removed "${b.title}" from favorites.`);
+  } else {
+    myFavorites.add(id);
+    showToast(`Added "${b.title}" to favorites.`);
+  }
+  renderUserShelves();
+}
+
+function borrowBook(id){
+  const b = books.find(x=>x.id===id);
+  if(!b || b.available<=0) return;
+  b.available -= 1;
+  myBorrowed.add(id);
+  logActivity('borrow', currentUser.name, b.title);
+  showToast(`📖 "${b.title}" borrowed. Enjoy the read!`);
+  renderUserShelves();
+}
+
+function returnBook(id){
+  const b = books.find(x=>x.id===id);
+  if(!b) return;
+  b.available = Math.min(b.copies, b.available + 1);
+  myBorrowed.delete(id);
+  logActivity('return', currentUser.name, b.title);
+  showToast(`↩ "${b.title}" returned. Thank you!`);
+  renderUserShelves();
+}
+
+/* ---------------- ACTIVITY LOG ---------------- */
+function logActivity(type, user, bookTitle){
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) + ' · ' + now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  activityLog.unshift({type, user, bookTitle, time});
+  renderActivityLog();
+}
+
+function renderActivityLog(){
+  const el = document.getElementById('logEntries');
+  if(!el) return;
+  if(activityLog.length === 0){
+    el.innerHTML = '<p class="log-empty">No activity yet.</p>';
+    return;
+  }
+  el.innerHTML = activityLog.slice(0,50).map(l => {
+    const icons = {borrow:'📖',return:'↩️',add:'➕',delete:'🗑️',edit:'✏️'};
+    const labels = {borrow:'Borrowed',return:'Returned',add:'Added',delete:'Removed',edit:'Updated'};
+    return `<div class="log-item">
+      <div class="log-icon ${l.type}">${icons[l.type]||'📌'}</div>
+      <div class="log-details">
+        <div class="log-action">${l.user} ${labels[l.type]||l.type} "${escapeHtml(l.bookTitle)}"</div>
+        <div class="log-time">${l.time}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------------- ADMIN VIEW ---------------- */
+function renderAdminShelves(){
+  const search = document.getElementById('adminSearchBox').value.toLowerCase();
+  const catFilter = document.getElementById('adminCategoryFilter').value;
+  const container = document.getElementById('adminShelves');
+  container.innerHTML = '';
+
+  const cats = catFilter === 'all' ? categories : [catFilter];
+  let totalTitles = 0, totalCopies = 0;
+
+  cats.forEach(cat=>{
+    const catBooks = books.filter(b=>
+      b.category === cat &&
+      (b.title.toLowerCase().includes(search) || b.author.toLowerCase().includes(search))
+    );
+    if(catBooks.length === 0) return;
+
+    const heading = document.createElement('div');
+    heading.className = 'shelf-heading';
+    heading.innerHTML = `<span class="cat-dot" style="background:${categoryColors[cat]||'#888'}"></span><h3>${cat}</h3><span class="count">${catBooks.length} title(s)</span>`;
+    container.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'book-grid';
+    catBooks.forEach(b=>{
+      totalTitles++; totalCopies += b.copies;
+      const card = document.createElement('div');
+      card.className = 'book-card';
+      card.innerHTML = `
+        <div class="spine ${catClass(b.category)}"></div>
+        ${bookCoverHtml(b)}
+        <p class="book-title">${escapeHtml(b.title)}</p>
+        <div class="book-author">by ${escapeHtml(b.author)}</div>
+        <div class="badge-row">
+          <span class="badge cat-tag ${catClass(b.category)}">${b.category}</span>
+          <span class="badge ${b.available===0?'low':'avail'}">${b.available} avail</span>
+          <span class="badge">${b.copies} copies</span>
+        </div>
+        <div class="card-actions" style="flex-wrap:wrap;">
+          <button class="btn-sm btn-edit" onclick="openEditModal(${b.id})">✏️ Update</button>
+          <button class="btn-sm btn-edit" onclick="adjustCopies(${b.id}, 1)">+ Copy</button>
+          <button class="btn-sm btn-edit" onclick="adjustCopies(${b.id}, -1)">- Copy</button>
+          <button class="btn-sm btn-del" onclick="deleteBook(${b.id})">🗑️ Remove</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  });
+
+  if(container.innerHTML === ''){
+    container.innerHTML = '<p class="empty-note">No books match this search.</p>';
+  }
+
+  document.getElementById('adminTotalTitles').textContent = totalTitles;
+  document.getElementById('adminTotalCopies').textContent = totalCopies;
+}
+
+function addBook(){
+  const title = document.getElementById('newTitle').value.trim();
+  const author = document.getElementById('newAuthor').value.trim();
+  const category = document.getElementById('newCategory').value;
+  const copies = parseInt(document.getElementById('newCopies').value) || 1;
+  const image = document.getElementById('newImage').value.trim();
+
+  if(!title || !author){
+    showToast('Please enter both a title and an author.');
+    return;
+  }
+  const newId = Math.max(0, ...books.map(b=>b.id)) + 1;
+  books.push({id:newId, title, author, category, copies, available:copies, image});
+  document.getElementById('newTitle').value = '';
+  document.getElementById('newAuthor').value = '';
+  document.getElementById('newCopies').value = 5;
+  document.getElementById('newImage').value = '';
+  logActivity('add', currentUser.name, title);
+  showToast(`➕ "${title}" added to the ${category} shelf.`);
+  renderAdminShelves();
+}
+
+function adjustCopies(id, delta){
+  const b = books.find(x=>x.id===id);
+  if(!b) return;
+  const newCopies = b.copies + delta;
+  if(newCopies < 0) return;
+  const newAvailable = b.available + delta;
+  b.copies = newCopies;
+  b.available = Math.max(0, Math.min(newCopies, newAvailable));
+  renderAdminShelves();
+}
+
+function deleteBook(id){
+  const b = books.find(x=>x.id===id);
+  books = books.filter(x=>x.id!==id);
+  logActivity('delete', currentUser.name, b.title);
+  showToast(`🗑️ "${b.title}" removed from the collection.`);
+  renderAdminShelves();
+}
+
+/* ---------------- EDIT MODAL ---------------- */
+let editingBookId = null;
+
+function openEditModal(id){
+  const b = books.find(x=>x.id===id);
+  if(!b) return;
+  editingBookId = id;
+
+  const catSelect = document.getElementById('editCategory');
+  catSelect.innerHTML = '';
+  categories.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    if(c === b.category) opt.selected = true;
+    catSelect.appendChild(opt);
+  });
+
+  document.getElementById('editTitle').value = b.title;
+  document.getElementById('editAuthor').value = b.author;
+  document.getElementById('editCopies').value = b.copies;
+  document.getElementById('editImage').value = b.image || '';
+
+  document.getElementById('editModalOverlay').classList.add('open');
+}
+
+function closeEditModal(){
+  editingBookId = null;
+  document.getElementById('editModalOverlay').classList.remove('open');
+}
+
+function saveEditModal(){
+  const b = books.find(x=>x.id===editingBookId);
+  if(!b) return;
+
+  const title = document.getElementById('editTitle').value.trim();
+  const author = document.getElementById('editAuthor').value.trim();
+  const category = document.getElementById('editCategory').value;
+  const newCopiesVal = parseInt(document.getElementById('editCopies').value);
+  const image = document.getElementById('editImage').value.trim();
+
+  if(!title || !author){
+    showToast('Title and author cannot be empty.');
+    return;
+  }
+  const copies = isNaN(newCopiesVal) || newCopiesVal < 0 ? b.copies : newCopiesVal;
+
+  b.title = title;
+  b.author = author;
+  b.category = category;
+  b.copies = copies;
+  b.available = Math.min(b.available, copies);
+  b.image = image;
+
+  logActivity('edit', currentUser.name, title);
+  showToast(`✏️ "${title}" has been updated.`);
+  closeEditModal();
+  renderAdminShelves();
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
