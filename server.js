@@ -12,10 +12,17 @@ app.use(express.json());
 // Serve static files from the public directory (for index.html, css, images)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(async () => {
+// Connect to MongoDB (Serverless optimized)
+let cachedDb = null;
+async function connectToDatabase() {
+  if (cachedDb) return cachedDb;
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000 // 5 second timeout
+    });
     console.log('✅ Connected to MongoDB');
+    cachedDb = db;
+    
     // Seed initial data if empty
     const count = await Book.countDocuments();
     if (count === 0) {
@@ -50,8 +57,24 @@ mongoose.connect(process.env.MONGO_URI)
       await Book.insertMany(initialBooks);
       console.log('✅ Seeding complete!');
     }
-  })
-  .catch(err => console.error('❌ MongoDB Connection Error:', err));
+    return db;
+  } catch (err) {
+    console.error('❌ MongoDB Connection Error:', err);
+    throw err;
+  }
+}
+
+// Middleware to ensure DB connection before handling requests
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    try {
+      await connectToDatabase();
+    } catch (err) {
+      return res.status(500).json({ error: 'Database connection failed: ' + err.message });
+    }
+  }
+  next();
+});
 
 // ================= AUTH ROUTES =================
 const bcrypt = require('bcryptjs');
