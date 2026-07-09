@@ -831,6 +831,32 @@
     main{padding:18px;}
     header.topbar{padding:14px 18px;}
   }
+
+  /* ---------- Footer ---------- */
+  .app-footer {
+    text-align: center;
+    padding: 24px 16px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(15,42,30,0.1);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    color: var(--muted);
+  }
+  .app-footer p {
+    margin: 4px 0;
+    font-size: 13.5px;
+  }
+  .app-footer .developer-name {
+    font-weight: 700;
+    color: var(--ink-deep);
+    letter-spacing: 0.5px;
+  }
+  .app-footer .footer-extra {
+    font-style: italic;
+    font-size: 12.5px;
+    margin-top: 8px;
+    color: var(--ink);
+  }
 </style>
 </head>
 <body><!-- ================= LOGIN ================= -->
@@ -1016,6 +1042,13 @@
       <div id="adminShelves"></div>
     </div>
   </main>
+  
+  <footer class="app-footer">
+    <div class="footer-content">
+      <p>Developed with ❤️ by <span class="developer-name">Dhivakaran</span></p>
+      <p class="footer-extra">Explore the world of knowledge, one book at a time. Designed for a beautiful reading experience.</p>
+    </div>
+  </footer>
 </div>
 
 <!-- ================= EDIT BOOK MODAL ================= -->
